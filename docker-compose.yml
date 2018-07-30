@@ -1,0 +1,10 @@
+vue:
+  build: ./
+  working_dir: "/var/www/htdocs"
+  environment:
+    - "HOST=0.0.0.0"
+  volumes:
+    - ./:/var/www/htdocs
+  ports:
+    - "8080:8080"
+  command: yarn run dev
