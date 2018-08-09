@@ -5,32 +5,20 @@ const config = require('../config')
 const merge = require('webpack-merge')
 const path = require('path')
 const baseWebpackConfig = require('./webpack.base.conf')
+const clientWebpackConfig = require('./webpack.client.config')
+const serverWebpackConfig = require('./webpack.server.config')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
-const VueSSRClientPlugin = require('vue-server-renderer/client-plugin')
-const VueSSRServerPlugin = require('vue-server-renderer/server-plugin')
-
-const log4js = require('log4js');
-const logger = log4js.getLogger();
-logger.level = "debug";
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
+const mergeWebpackConfig = merge(baseWebpackConfig, clientWebpackConfig);
+const mergeAllWebpackConfig = merge(mergeWebpackConfig, serverWebpackConfig);
+
 const devWebpackConfig = merge(baseWebpackConfig, {
-  entry: [
-      './src/entry-client.js',
-      './src/entry-server.js',
-  ]
-  optimization: {
-    splitChunks: {
-      name: 'manifest',
-      chunks: 'initial',
-    }
-  },
-  mode: 'production',
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
   },
@@ -62,8 +50,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     }
   },
   plugins: [
-      new VueSSRClientPlugin(),
-    //new VueSSRServerPlugin(),
     new webpack.LoaderOptionsPlugin({ options: {} }),
     new webpack.DefinePlugin({
       'process.env': require('../config/dev.env')
@@ -86,8 +72,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       }
     ])
   ]
-})
-logger.debug(config.build.assetsRoot);
+});
+
+module.export = devWebpackConfig;
 /*
 module.exports = new Promise((resolve, reject) => {
   portfinder.basePort = process.env.PORT || config.dev.port
@@ -113,6 +100,5 @@ module.exports = new Promise((resolve, reject) => {
       resolve(devWebpackConfig)
     }
   })
-})
+});
 */
-module.exports = devWebpackConfig;

@@ -7,4 +7,4 @@ vue:
     - ./:/var/www/htdocs
   ports:
     - "8080:8080"
-  command: yarn run dev
+  command: yarn dev
